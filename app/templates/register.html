@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        :root {
+            --primary-color: #22254b;
+            --secondary-color: #373b69;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--primary-color);
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+        }
+
+        .container {
+            width: 80%;
+            /* Cambiado a un ancho más grande */
+            max-width: 500px;
+            /* Ancho máximo para mantener el diseño */
+            height: auto;
+            /* Altura automática */
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"],
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #3d3d3d86;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0);
+        }
+
+        .btnRegister {
+            background: #fff;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 3px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            display: inline-block;
+            text-align: center;
+            margin: auto;
+        }
+
+        .btnRegister:hover {
+            color: #fff;
+        }
+
+        .btnRegister::after {
+            content: "";
+            background: var(--primary-color);
+            position: absolute;
+            z-index: -1;
+            padding: 16px 20px;
+            display: block;
+            left: 0;
+            right: 0;
+            top: 100%;
+            bottom: -100%;
+            -webkit-transition: all 0.35s;
+            transition: all 0.35s;
+        }
+
+        .btnRegister:hover::after {
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            -webkit-transition: all 0.35s;
+            transition: all 0.35s;
+        }
+
+        .terms-btn {
+            color: var(--primary-color);
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 8px;
+            /* Espacio entre el checkbox y el texto */
+        }
+
+        .messages {
+            margin-top: 15px;
+            padding: 5px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 3px;
+            text-align: center;
+        }
+    </style>
+</head>
+<script>
+    function checkUsername(input) {
+        // Usa encodeURIComponent para asegurar que el valor del input sea seguro para la URL
+        const username = encodeURIComponent(input.value);
+    
+        fetch(`/api/check_user/${username}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    input.setCustomValidity('Username already exists');
+                } else {
+                    input.setCustomValidity('');
+                }
+                // Es importante disparar la validación del formulario después de cambiar la validez
+                input.reportValidity();
+            })
+            .catch(error => console.error('Error verifying user:', error));
+    }
+    </script>
+    
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <form action="/register" method="POST">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="Enter your E-mail" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required
+                    minlength="5">
+            </div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <label for="acceptTerms">
+                <p>
+                    <input type="checkbox" id="acceptTerms" name="acceptTerms" required> Accept <a href="{{ url_for('terms') }}"
+                        class="terms-btn">Terms and Conditions</a>
+            </label>
+            </p>
+
+            <button class="btnRegister" type="submit">Register</button>
+        </form>
+    </div>
+</body>
+
+
+
+</html>
